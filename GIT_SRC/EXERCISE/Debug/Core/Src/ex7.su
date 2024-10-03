@@ -1,0 +1,4 @@
+ex7.c:15:6:HAL_TIM_PeriodElapsedCallback	16	static
+ex7.c:26:6:updateClockBuffer	16	static
+ex7.c:33:6:update7SEG	16	static
+ex7.c:72:6:display7SEG	32	static
