@@ -94,6 +94,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_TIM_Base_Start_IT(&htim2);
   while (1)
   {
     /* USER CODE END WHILE */
@@ -197,14 +198,17 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, DOT_Pin|LED_RED_Pin|EN0_Pin|EN1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, DOT_Pin|LED_RED_Pin|EN0_Pin|EN1_Pin
+                          |EN2_Pin|EN3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
                           |SEG4_Pin|SEG5_Pin|SEG6_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : DOT_Pin LED_RED_Pin EN0_Pin EN1_Pin */
-  GPIO_InitStruct.Pin = DOT_Pin|LED_RED_Pin|EN0_Pin|EN1_Pin;
+  /*Configure GPIO pins : DOT_Pin LED_RED_Pin EN0_Pin EN1_Pin
+                           EN2_Pin EN3_Pin */
+  GPIO_InitStruct.Pin = DOT_Pin|LED_RED_Pin|EN0_Pin|EN1_Pin
+                          |EN2_Pin|EN3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -222,6 +226,68 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+int seven_segment_counter = 50;  // 500ms cho mỗi lần chuyển đổi LED 7 đoạn
+int seven_segment_EN_state = 0;  // Trạng thái của LED 7 đoạn (đi�?u khiển thứ tự hiển thị số)
+int LED_blink_counter = 100;     // 1 giây (1000ms) cho nhấp nháy LED DOT
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    // Xử lý việc hiển thị cho LED 7 đoạn
+    seven_segment_counter--;
+    if (seven_segment_counter <= 0) {
+        seven_segment_counter = 50;  // 500ms cho mỗi lần chuyển đổi
+
+        // Chuyển đổi giữa các LED 7 đoạn
+        switch (seven_segment_EN_state) {
+        case 0:
+            // Hiển thị số 1 trên LED thứ 1
+            HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);  // Bật LED thứ 1
+            HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+            HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+            HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+            display7SEG(1);  // Hiển thị số 1
+            seven_segment_EN_state = 1;  // Chuyển sang LED thứ 2
+            break;
+
+        case 1:
+            // Hiển thị số 2 trên LED thứ 2
+            HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+            HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);  // Bật LED thứ 2
+            HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+            HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+            display7SEG(2);  // Hiển thị số 2
+            seven_segment_EN_state = 2;  // Chuyển sang LED thứ 3
+            break;
+
+        case 2:
+            // Hiển thị số 3 trên LED thứ 3
+            HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+            HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+            HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);  // Bật LED thứ 3
+            HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+            display7SEG(3);  // Hiển thị số 3
+            seven_segment_EN_state = 3;  // Chuyển sang LED thứ 4
+            break;
+
+        case 3:
+            // Hiển thị số 0 trên LED thứ 4
+            HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+            HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+            HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+            HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, RESET);  // Bật LED thứ 4
+            display7SEG(0);  // Hiển thị số 0
+            seven_segment_EN_state = 0;  // Quay lại hiển thị LED thứ 1
+            break;
+        }
+    }
+
+    // Xử lý nhấp nháy LED DOT mỗi giây
+    LED_blink_counter--;
+    if (LED_blink_counter <= 0) {
+        LED_blink_counter = 100;  // 1 giây (1000ms cho nhấp nháy)
+        HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);  // �?ảo trạng thái LED DOT
+    }
+}
+
 
 /* USER CODE END 4 */
 
