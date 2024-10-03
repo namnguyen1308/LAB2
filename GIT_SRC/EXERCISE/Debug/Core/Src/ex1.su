@@ -1,0 +1,2 @@
+ex1.c:9:6:display7SEG	32	static
+ex1.c:35:6:HAL_TIM_PeriodElapsedCallback	16	static
