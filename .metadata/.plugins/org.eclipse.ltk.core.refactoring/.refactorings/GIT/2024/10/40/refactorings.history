@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;GIT/Core/Inc/ex5.h&apos; to &apos;ex6.h&apos;" description="Rename resource &apos;ex5.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Inc/ex5.h" name="ex6.h" stamp="1727939355603" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;GIT/Core/Src/ex5.c&apos; to &apos;ex6.c&apos;" description="Rename resource &apos;ex5.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Src/ex5.c" name="ex6.c" stamp="1727939363000" updateReferences="true"/>
+</session>
